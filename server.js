@@ -6,7 +6,6 @@ const serviceRoutes = require("./routes/serviceRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const purchaseRoutes = require('./routes/purchaseRoutes');  // Import the purchase routes
 const adminRoutes = require('./routes/adminRoutes')
-const mongoose = require("mongoose");
 
 const app = express();
 app.use(express.json());
