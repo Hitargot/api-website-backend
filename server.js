@@ -16,11 +16,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // ✅ More Flexible CORS
 const cors = require('cors');
-
-app.use(express.json());
 app.use(cors({
-  origin: process.env.FRONTEND_URL ,  // Allow frontend to make requests
-  credentials: true,               // Allow credentials (cookies, authorization headers, etc.)
+  origin: process.env.FRONTEND_URL, // or any other origin
+  credentials: true,
+  methods: "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+  allowedHeaders: "Content-Type, Authorization"
 }));
 
 
