@@ -22,6 +22,11 @@ app.use(cors({
   allowedHeaders: "Content-Type, Authorization"
 }));
 console.log(process.env.FRONTEND_URL); // Should log the frontend URL
+app.use((req, res, next) => {
+  console.log("Request Headers:", req.headers);
+  res.setHeader("Access-Control-Allow-Origin", "*");  // For debugging, set it to * temporarily
+  next();
+});
 
 
 
