@@ -15,7 +15,6 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // ✅ More Flexible CORS
-const cors = require('cors');
 app.use(cors({
   origin: process.env.FRONTEND_URL, // or any other origin
   credentials: true,
