@@ -32,7 +32,6 @@ connectDB();
 
 // Serve QR Code images
 app.use("/uploads", express.static("uploads"));
-app.use('/api', purchaseRoutes);
 // Routes
 app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", adminAuthRoutes);
