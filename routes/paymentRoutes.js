@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/create", upload.single("qrCode"), createPayment);
 
 // 📌 **2️⃣ Fetch All Payment Methods**
-router.get("/", getPayments);
+router.get("/payment", getPayments);
 
 // 📌 **3️⃣ Admin: Delete Payment Method**
 router.delete("/:id", deletePayment);
