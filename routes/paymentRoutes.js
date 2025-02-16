@@ -14,6 +14,6 @@ router.get("/payment", getPayments);
 router.delete("/:id", deletePayment);
 
 // 📌 **4️⃣ Admin: Edit Payment Method**
-router.put("/edit:id", upload.single("qrCode"), editPayment);
+router.put("/:id", upload.single("qrCode"), editPayment);
 
 module.exports = router;
