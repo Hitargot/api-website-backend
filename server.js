@@ -17,11 +17,10 @@ app.use(express.urlencoded({ extended: true }));
 // ✅ More Flexible CORS
 const cors = require('cors');
 
+app.use(express.json());
 app.use(cors({
-  origin: 'https://snazzy-lebkuchen-e377a7.netlify.app', // Allow Netlify domain
-  credentials: true, // Allow cookies (if needed)
-  methods: 'GET, POST, PUT, DELETE', // Allowed methods
-  allowedHeaders: 'Content-Type, Authorization', // Allowed headers
+  origin: process.env.FRONTEND_URL ,  // Allow frontend to make requests
+  credentials: true,               // Allow credentials (cookies, authorization headers, etc.)
 }));
 
 
