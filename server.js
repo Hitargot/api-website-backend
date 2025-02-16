@@ -17,9 +17,15 @@ app.use(express.urlencoded({ extended: true }));
 // ✅ More Flexible CORS
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL ,  // Allow frontend to make requests
-  credentials: true,               // Allow credentials (cookies, authorization headers, etc.)
+  origin: 'https://api-selling-website.netlify.app', // Replace with your frontend URL
+  methods: 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+  allowedHeaders: 'Content-Type, Authorization',
+  credentials: true
 }));
+
+// For handling OPTIONS requests for preflight
+app.options('*', cors()); 
+
 console.log(process.env.FRONTEND_URL); // Should log the frontend URL
 app.use((req, res, next) => {
   console.log("Request Headers:", req.headers);
