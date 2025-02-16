@@ -10,7 +10,7 @@ exports.createPayment = async (req, res) => {
       }
   
       const { name, address } = req.body;
-      const qrCodeUrl = `/uploads/${req.file.filename}`;  // Path to the uploaded QR code
+      const qrCodeUrl = `https://api-selling-website.netlify.app/uploads/${req.file.filename}`;  // Path to the uploaded QR code
   
       // Check if all required fields are present
       if (!name || !address) {
@@ -78,7 +78,7 @@ exports.editPayment = async (req, res) => {
       // If a new QR code is uploaded, handle the file update
       let qrCodeUrl = payment.qrCode; // Default to the existing QR code URL if no new file is uploaded
       if (req.file) {
-        qrCodeUrl = `/uploads/${req.file.filename}`; // Update the QR code URL with the new file
+        qrCodeUrl = `https://api-selling-website.netlify.app/uploads/${req.file.filename}`; // Update the QR code URL with the new file
       }
   
       // Update the payment method fields
