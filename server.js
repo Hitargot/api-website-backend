@@ -7,6 +7,7 @@ const paymentRoutes = require("./routes/paymentRoutes");
 const purchaseRoutes = require('./routes/purchaseRoutes');  // Import the purchase routes
 const adminRoutes = require('./routes/adminRoutes')
 const mongoose = require("mongoose");
+const serviceAPIRoutes = require("./routes/serviceAPIRoutes")
 
 const app = express();
 app.use(express.json());
@@ -49,6 +50,7 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", adminAuthRoutes);
 app.use("/api/services", serviceRoutes); // Mount service routes
 app.use("/api/admin", adminRoutes); // Mount service routes
+app.use("/api/service-api", serviceAPIRoutes); // Mount service routes
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
