@@ -15,22 +15,15 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // ✅ More Flexible CORS
+const cors = require('cors');
+
 app.use(cors({
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      "http://localhost:3000", 
-      "https://snazzy-lebkuchen-e377a7.netlify.app"
-    ];
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // Allow cookies and authentication headers
-  methods: "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-  allowedHeaders: "Content-Type, Authorization"
+  origin: 'https://snazzy-lebkuchen-e377a7.netlify.app', // Allow Netlify domain
+  credentials: true, // Allow cookies (if needed)
+  methods: 'GET, POST, PUT, DELETE', // Allowed methods
+  allowedHeaders: 'Content-Type, Authorization', // Allowed headers
 }));
+
 
 
 // ✅ Handle Preflight Requests
