@@ -113,7 +113,7 @@ exports.createPurchase = [
                 <body>
                   <div class="container">
                     <div class="header">
-                      <h1>Your Invoice from Your Company Name</h1>
+                      <h1>Your Invoice from APIs Marketplace</h1>
                       <p>Thank you for your purchase!</p>
                     </div>
             
@@ -152,8 +152,8 @@ exports.createPurchase = [
                     </div>
             
                     <div class="footer">
-                      <p>Best regards, <br>Your Company Name</p>
-                      <p>Website: <a href="http://yourcompany.com">yourcompany.com</a></p>
+                      <p>Best regards, <br>APIs Marketplace</p>
+                      <p>Website: <a href="https://api-selling-website.netlify.app">APIs Marketplace</a></p>
                     </div>
                   </div>
                 </body>
