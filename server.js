@@ -21,6 +21,7 @@ app.use(cors({
   methods: "GET, POST, PUT, DELETE, PATCH, OPTIONS",
   allowedHeaders: "Content-Type, Authorization"
 }));
+console.log(process.env.FRONTEND_URL); // Should log the frontend URL
 
 
 
