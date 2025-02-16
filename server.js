@@ -6,6 +6,7 @@ const serviceRoutes = require("./routes/serviceRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const purchaseRoutes = require('./routes/purchaseRoutes');  // Import the purchase routes
 const adminRoutes = require('./routes/adminRoutes')
+const mongoose = require("mongoose");
 
 const app = express();
 app.use(express.json());
@@ -30,6 +31,7 @@ connectDB();
 
 // Serve QR Code images
 app.use("/uploads", express.static("uploads"));
+app.use('/api', purchaseRoutes);
 // Routes
 app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", adminAuthRoutes);
