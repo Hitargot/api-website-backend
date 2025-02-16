@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // ✅ More Flexible CORS
 app.use(cors({
-  origin: process.env.FRONTEND_URL, // or any other origin
+  origin: ['https://api-selling-website.netlify.app', 'http://localhost:3000'], // Add your frontend URLs here
   credentials: true,
   methods: "GET, POST, PUT, DELETE, PATCH, OPTIONS",
   allowedHeaders: "Content-Type, Authorization"
@@ -26,7 +26,7 @@ console.log(process.env.FRONTEND_URL); // Should log the frontend URL
 
 
 // ✅ Handle Preflight Requests
-app.options("*", cors());
+// app.options("*", cors());
 
 connectDB();
 
