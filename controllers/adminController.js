@@ -1,6 +1,9 @@
-const Purchase = require('../models/purchase');
-const ServiceAPI = require('../models/ServiceAPI');
-const { sendEmail } = require('../utils/sendEmail');
+// controllers/adminController.js
+const Purchase = require("../models/purchase");
+const ServiceAPI = require("../models/ServiceAPI");
+const { sendEmail } = require("../utils/sendEmail");
+
+
 
 exports.getAllPurchases = async (req, res) => {
   try {
@@ -20,48 +23,21 @@ exports.updatePurchaseStatus = async (req, res) => {
     return res.status(400).json({ error: 'Invalid status. Use "accepted" or "rejected".' });
   }
 
-  // Fetch API Key for the service using the purchaseId
-  const getAPIKeyForPurchase = async (purchaseId) => {
-    try {
-      const purchase = await Purchase.findById(purchaseId);
-      if (!purchase) {
-        throw new Error("Purchase not found.");
-      }
-
-      // Ensure purchase has a valid serviceId reference
-      const serviceAPI = await ServiceAPI.findOne({ service: purchase.serviceId });  // Assuming serviceId is in Purchase
-      if (!serviceAPI) {
-        throw new Error("API key not found for the given service.");
-      }
-
-      return serviceAPI.apiKey;  // Return the API key
-    } catch (error) {
-      console.error("Error fetching API key:", error);
-      throw error;
-    }
-  };
-
   try {
-    // Find the purchase by ID
     const updatedPurchase = await Purchase.findById(purchaseId);
     if (!updatedPurchase) {
       return res.status(404).json({ error: "Purchase not found." });
     }
 
-    // Fetch API key only if the status is "accepted"
-    let apiKey = null;
-    if (status === "accepted") {
-      console.log("Fetching API key for service:", updatedPurchase.serviceId);  // Use serviceId instead of serviceName
-      apiKey = await getAPIKeyForPurchase(purchaseId);  // Fetch API key for this purchase
-      console.log("API Key retrieved:", apiKey);
+    // Fetch the API key for the given service name
+    const serviceAPI = await ServiceAPI.findOne({ service: updatedPurchase.serviceName });
+    if (!serviceAPI) {
+      return res.status(404).json({ error: "API key not found for the selected service." });
     }
 
-    // Update the purchase status
+    // Update the purchase status and set the fetched API key
     updatedPurchase.status = status;
-    if (apiKey) {
-      updatedPurchase.apiKey = apiKey;  // Store the API key if fetched
-    }
-
+    updatedPurchase.apiKey = serviceAPI.apiKey; // Store the API key in the purchase model
     await updatedPurchase.save();
 
     // Email subject
@@ -78,7 +54,8 @@ exports.updatePurchaseStatus = async (req, res) => {
             .header h1 { font-size: 28px; color: #333; }
             .status { font-size: 20px; font-weight: bold; text-align: center; padding: 10px; border-radius: 5px;
                       background-color: ${status === "accepted" ? "#d4edda" : "#f8d7da"};
-                      color: ${status === "accepted" ? "#155724" : "#721c24"}; margin-bottom: 20px; }
+                      color: ${status === "accepted" ? "#155724" : "#721c24"};
+                      margin-bottom: 20px; }
             .details { margin-bottom: 20px; }
             .details h3 { font-size: 20px; color: #333; }
             .details p { font-size: 16px; color: #666; }
@@ -101,11 +78,11 @@ exports.updatePurchaseStatus = async (req, res) => {
               <h1>Purchase Status Update</h1>
               <p>Dear ${updatedPurchase.fullName},</p>
             </div>
-
+    
             <div class="status">
               Your purchase has been ${status.charAt(0).toUpperCase() + status.slice(1)}.
             </div>
-
+    
             <div class="details">
               <h3>Purchase Details:</h3>
               <table class="purchase-info">
@@ -145,9 +122,12 @@ exports.updatePurchaseStatus = async (req, res) => {
     console.log(`Email sent to ${updatedPurchase.email} with API key.`);
 
     // Respond with success message
-    res.status(200).json({ message: `Purchase ${status} successfully. API key sent if accepted.` });
+    res.status(200).json({
+      message: `Purchase ${status} successfully. API key retrieved.`,
+      apiKey: serviceAPI.apiKey,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error updating purchase status or sending email", details: error.message });
+    res.status(500).json({ error: "Error updating purchase status or fetching API key", details: error.message });
   }
 };

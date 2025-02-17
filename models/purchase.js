@@ -35,6 +35,14 @@ const purchaseSchema = new mongoose.Schema({
     enum: ['pending', 'accepted', 'rejected'],
     default: 'pending',  // default status is pending
   },
+  serviceId: {  // Add the serviceId reference here
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Service', // Reference to the Service model
+    required: true,  // Ensure this is always provided
+  },
+  apiKey: {
+    type: String, // New field to store the fetched API key
+  },
   createdAt: {
     type: Date,
     default: Date.now,

@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const serviceAPISchema = new mongoose.Schema({
   service: {
-    type: mongoose.Schema.Types.ObjectId,  // Ensures service is an ObjectId reference
-    ref: "Service",  // Reference to the Service model
+    type: String,
     required: true,
+    unique: true, // Ensure service names are unique
   },
   apiKey: {
     type: String,
