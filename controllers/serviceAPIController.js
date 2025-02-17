@@ -1,20 +1,25 @@
 const ServiceAPI = require("../models/ServiceAPI");
+const Service = require("../models/Service"); // Assuming you have a Service model
 
-// Fetch API for a Service
-exports.fetchAPI = async (req, res) => {
-  const { serviceId } = req.params;
-
+// Fetch all services for dropdown selection
+exports.fetchAllServices = async (req, res) => {
   try {
-    const serviceAPI = await ServiceAPI.findOne({ service: serviceId });
-
-    if (!serviceAPI) {
-      return res.status(404).json({ error: "No API found for this service." });
-    }
-
-    res.status(200).json({ apiKey: serviceAPI.apiKey });
+    const services = await Service.find({}, "name _id"); // Fetch only service name and ID
+    res.status(200).json(services);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error fetching API.", details: error.message });
+    res.status(500).json({ error: "Error fetching services.", details: error.message });
+  }
+};
+
+// Fetch all stored API keys with services
+exports.fetchAPIList = async (req, res) => {
+  try {
+    const apiList = await ServiceAPI.find().populate("service", "name");
+    res.status(200).json(apiList);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching API list.", details: error.message });
   }
 };
 
@@ -26,12 +31,10 @@ exports.addOrUpdateAPI = async (req, res) => {
     let serviceAPI = await ServiceAPI.findOne({ service: serviceId });
 
     if (serviceAPI) {
-      // Update existing API
       serviceAPI.apiKey = apiKey;
       await serviceAPI.save();
       return res.status(200).json({ message: "API updated successfully." });
     } else {
-      // Create new API entry
       serviceAPI = new ServiceAPI({ service: serviceId, apiKey });
       await serviceAPI.save();
       return res.status(201).json({ message: "API added successfully." });
