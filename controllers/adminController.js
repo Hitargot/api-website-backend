@@ -1,7 +1,8 @@
 // controllers/adminController.js
-const Purchase = require("../models/purchase");
+const Purchase = require('../models/purchase');
 const ServiceAPI = require("../models/ServiceAPI");
-const { sendEmail } = require("../utils/sendEmail");
+const Service = require("../models/Service"); // Import the Service model
+const { sendEmail } = require('../utils/sendEmail');
 
 
 
@@ -24,22 +25,36 @@ exports.updatePurchaseStatus = async (req, res) => {
   }
 
   try {
+    // Find the purchase by ID
     const updatedPurchase = await Purchase.findById(purchaseId);
     if (!updatedPurchase) {
       return res.status(404).json({ error: "Purchase not found." });
     }
 
-    // Fetch the API key for the given service name
-    const serviceAPI = await ServiceAPI.findOne({ service: updatedPurchase.serviceName });
-    if (!serviceAPI) {
-      return res.status(404).json({ error: "API key not found for the selected service." });
+    // If the purchase is accepted and no API key exists, fetch it from ServiceAPI
+    let apiKey = updatedPurchase.apiKey;
+    if (status === "accepted" && !apiKey) {
+      // Find the service using the service name in the purchase
+      const service = await Service.findOne({ name: updatedPurchase.serviceName });
+
+      if (!service) {
+        return res.status(404).json({ error: "Service not found." });
+      }
+
+      // Find the API key linked to this service
+      const serviceAPI = await ServiceAPI.findOne({ service: service._id });
+
+      if (!serviceAPI) {
+        return res.status(404).json({ error: "API key not found for this service." });
+      }
+
+      apiKey = serviceAPI.apiKey;
+      updatedPurchase.apiKey = apiKey;
     }
 
-    // Update the purchase status and set the fetched API key
+    // Update the purchase status and save the API key (if fetched)
     updatedPurchase.status = status;
-    updatedPurchase.apiKey = serviceAPI.apiKey; // Store the API key in the purchase model
     await updatedPurchase.save();
-
     // Email subject
     const emailSubject = `Your Purchase Has Been ${status.charAt(0).toUpperCase() + status.slice(1)}`;
 
@@ -122,12 +137,9 @@ exports.updatePurchaseStatus = async (req, res) => {
     console.log(`Email sent to ${updatedPurchase.email} with API key.`);
 
     // Respond with success message
-    res.status(200).json({
-      message: `Purchase ${status} successfully. API key retrieved.`,
-      apiKey: serviceAPI.apiKey,
-    });
+    res.status(200).json({ message: `Purchase ${status} successfully. API key sent if accepted.` });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error updating purchase status or fetching API key", details: error.message });
+    res.status(500).json({ error: "Error updating purchase status or sending email", details: error.message });
   }
 };
