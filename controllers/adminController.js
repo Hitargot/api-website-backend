@@ -1,7 +1,8 @@
 // controllers/adminController.js
 const Purchase = require('../models/purchase');
 const { sendEmail } = require('../utils/sendEmail');  // Assuming sendEmail function is set up
-const crypto = require("crypto"); // For generating secure API keys
+const Service = require('../models/Service'); // Model for services
+const ServiceApi = require('../models/ServiceAPI'); // Model storing API keys
 
 
 exports.getAllPurchases = async (req, res) => {
@@ -32,9 +33,24 @@ exports.updatePurchaseStatus = async (req, res) => {
     // If purchase is accepted, generate an API key
     let apiKey = updatedPurchase.apiKey;
     if (status === "accepted" && !apiKey) {
-      apiKey = crypto.randomBytes(32).toString("hex"); // Generate secure API key
+      // Retrieve the service to get the serviceId
+      const service = await Service.findOne({ name: updatedPurchase.serviceName });
+    
+      if (!service) {
+        return res.status(400).json({ error: "Service not found." });
+      }
+    
+      // Retrieve API key from serviceApi model using serviceId
+      const serviceApi = await ServiceApi.findOne({ serviceId: service._id });
+    
+      if (!serviceApi || !serviceApi.apiKey) {
+        return res.status(400).json({ error: "API key for this service is not available." });
+      }
+    
+      apiKey = serviceApi.apiKey; // Assign the stored API key
       updatedPurchase.apiKey = apiKey;
     }
+    
 
     // Update the purchase status and save the API key (if generated)
     updatedPurchase.status = status;
