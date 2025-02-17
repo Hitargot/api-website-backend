@@ -33,7 +33,7 @@ exports.updatePurchaseStatus = async (req, res) => {
       if (!serviceAPI) {
         throw new Error("API key not found for the given service.");
       }
-      
+
       return serviceAPI.apiKey;  // Return the API key
     } catch (error) {
       console.error("Error fetching API key:", error);
@@ -64,7 +64,6 @@ exports.updatePurchaseStatus = async (req, res) => {
 
     await updatedPurchase.save();
 
-
     // Email subject
     const emailSubject = `Your Purchase Has Been ${status.charAt(0).toUpperCase() + status.slice(1)}`;
 
@@ -79,8 +78,7 @@ exports.updatePurchaseStatus = async (req, res) => {
             .header h1 { font-size: 28px; color: #333; }
             .status { font-size: 20px; font-weight: bold; text-align: center; padding: 10px; border-radius: 5px;
                       background-color: ${status === "accepted" ? "#d4edda" : "#f8d7da"};
-                      color: ${status === "accepted" ? "#155724" : "#721c24"};
-                      margin-bottom: 20px; }
+                      color: ${status === "accepted" ? "#155724" : "#721c24"}; margin-bottom: 20px; }
             .details { margin-bottom: 20px; }
             .details h3 { font-size: 20px; color: #333; }
             .details p { font-size: 16px; color: #666; }
@@ -103,11 +101,11 @@ exports.updatePurchaseStatus = async (req, res) => {
               <h1>Purchase Status Update</h1>
               <p>Dear ${updatedPurchase.fullName},</p>
             </div>
-    
+
             <div class="status">
               Your purchase has been ${status.charAt(0).toUpperCase() + status.slice(1)}.
             </div>
-    
+
             <div class="details">
               <h3>Purchase Details:</h3>
               <table class="purchase-info">
