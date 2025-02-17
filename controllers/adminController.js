@@ -1,8 +1,7 @@
 // controllers/adminController.js
 const Purchase = require('../models/purchase');
-const { sendEmail } = require('../utils/sendEmail');  // Assuming sendEmail function is set up
-const Service = require('../models/Service'); // Model for services
-const ServiceApi = require('../models/ServiceAPI'); // Model storing API keys
+const ServiceAPI = require('../models/ServiceAPI');  // Correctly refer to the ServiceAPI model
+const { sendEmail } = require('../utils/sendEmail');
 
 
 exports.getAllPurchases = async (req, res) => {
@@ -16,7 +15,7 @@ exports.getAllPurchases = async (req, res) => {
 };
 
 exports.updatePurchaseStatus = async (req, res) => {
-  const { purchaseId, status } = req.body; 
+  const { purchaseId, status } = req.body;
   const validStatuses = ["accepted", "rejected"];
 
   if (!validStatuses.includes(status)) {
@@ -30,31 +29,22 @@ exports.updatePurchaseStatus = async (req, res) => {
       return res.status(404).json({ error: "Purchase not found." });
     }
 
-    // If purchase is accepted, generate an API key
+    // Retrieve the API key from the serviceApi model based on the service ID
     let apiKey = updatedPurchase.apiKey;
-    
     if (status === "accepted" && !apiKey) {
-      // Retrieve the service with its linked API key
-      const service = await Service.findOne({ name: updatedPurchase.serviceName }).populate('serviceId');
-
-      if (!service) {
-        return res.status(400).json({ error: "Service not found." });
+      // Assuming the purchase document has a `service` field that refers to the service's ObjectId
+      const serviceApi = await ServiceAPI.findOne({ service: updatedPurchase.service });
+      if (serviceApi) {
+        apiKey = serviceApi.apiKey;  // Retrieve the API key from the ServiceAPI model
+        updatedPurchase.apiKey = apiKey;
+      } else {
+        return res.status(404).json({ error: "API key not found for this service." });
       }
-
-      // Retrieve API key from serviceApi model using serviceId
-      const serviceApi = await ServiceApi.findOne({ serviceId: service._id });
-
-      if (!serviceApi || !serviceApi.apiKey) {
-        return res.status(400).json({ error: "API key for this service is not available." });
-      }
-
-      apiKey = serviceApi.apiKey; // Assign the stored API key
-      updatedPurchase.apiKey = apiKey;
     }
 
-    // Update the purchase status and save it
+    // Update the purchase status and save the API key (if retrieved)
     updatedPurchase.status = status;
-    await updatedPurchase.save(); // Ensure changes are saved
+    await updatedPurchase.save();
 
     // Email subject
     const emailSubject = `Your Purchase Has Been ${status.charAt(0).toUpperCase() + status.slice(1)}`;
@@ -94,11 +84,11 @@ exports.updatePurchaseStatus = async (req, res) => {
               <h1>Purchase Status Update</h1>
               <p>Dear ${updatedPurchase.fullName},</p>
             </div>
-
+    
             <div class="status">
               Your purchase has been ${status.charAt(0).toUpperCase() + status.slice(1)}.
             </div>
-
+    
             <div class="details">
               <h3>Purchase Details:</h3>
               <table class="purchase-info">
