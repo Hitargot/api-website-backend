@@ -14,14 +14,15 @@ exports.fetchAllServices = async (req, res) => {
 
 // Fetch all stored API keys with services
 exports.fetchAPIList = async (req, res) => {
-  try {
-    const apiList = await ServiceAPI.find().populate("service", "name");
-    res.status(200).json(apiList);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error fetching API list.", details: error.message });
-  }
-};
+    try {
+      const apiList = await ServiceAPI.find().populate("service", "name"); // This will now correctly populate the `service` name
+      res.status(200).json(apiList);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Error fetching API list.", details: error.message });
+    }
+  };
+  
 
 // Add or Update API for a Service
 exports.addOrUpdateAPI = async (req, res) => {
