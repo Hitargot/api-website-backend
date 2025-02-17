@@ -32,29 +32,29 @@ exports.updatePurchaseStatus = async (req, res) => {
 
     // If purchase is accepted, generate an API key
     let apiKey = updatedPurchase.apiKey;
-    if (status === "accepted" && !apiKey) {
-      // Retrieve the service to get the serviceId
-      const service = await Service.findOne({ name: updatedPurchase.serviceName });
     
+    if (status === "accepted" && !apiKey) {
+      // Retrieve the service with its linked API key
+      const service = await Service.findOne({ name: updatedPurchase.serviceName }).populate('serviceId');
+
       if (!service) {
         return res.status(400).json({ error: "Service not found." });
       }
-    
+
       // Retrieve API key from serviceApi model using serviceId
       const serviceApi = await ServiceApi.findOne({ serviceId: service._id });
-    
+
       if (!serviceApi || !serviceApi.apiKey) {
         return res.status(400).json({ error: "API key for this service is not available." });
       }
-    
+
       apiKey = serviceApi.apiKey; // Assign the stored API key
       updatedPurchase.apiKey = apiKey;
     }
-    
 
-    // Update the purchase status and save the API key (if generated)
+    // Update the purchase status and save it
     updatedPurchase.status = status;
-    await updatedPurchase.save();
+    await updatedPurchase.save(); // Ensure changes are saved
 
     // Email subject
     const emailSubject = `Your Purchase Has Been ${status.charAt(0).toUpperCase() + status.slice(1)}`;
@@ -94,11 +94,11 @@ exports.updatePurchaseStatus = async (req, res) => {
               <h1>Purchase Status Update</h1>
               <p>Dear ${updatedPurchase.fullName},</p>
             </div>
-    
+
             <div class="status">
               Your purchase has been ${status.charAt(0).toUpperCase() + status.slice(1)}.
             </div>
-    
+
             <div class="details">
               <h3>Purchase Details:</h3>
               <table class="purchase-info">
