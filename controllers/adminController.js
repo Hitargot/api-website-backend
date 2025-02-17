@@ -22,6 +22,24 @@ exports.updatePurchaseStatus = async (req, res) => {
     return res.status(400).json({ error: 'Invalid status. Use "accepted" or "rejected".' });
   }
 
+  // Fetch API Key for the service using the purchaseId
+  const getAPIKeyForPurchase = async (purchaseId) => {
+    try {
+      const purchase = await Purchase.findById(purchaseId);
+      if (!purchase) {
+        throw new Error("Purchase not found.");
+      }
+      const serviceAPI = await ServiceAPI.findOne({ service: purchase.serviceId });
+      if (!serviceAPI) {
+        throw new Error("API key not found for the given service.");
+      }
+      return serviceAPI.apiKey;  // Return the apiKey
+    } catch (error) {
+      console.error("Error fetching API key:", error);
+      throw error;
+    }
+  };
+
   try {
     // Find the purchase by ID
     const updatedPurchase = await Purchase.findById(purchaseId);
@@ -29,30 +47,22 @@ exports.updatePurchaseStatus = async (req, res) => {
       return res.status(404).json({ error: "Purchase not found." });
     }
 
-    // Retrieve the API key from the serviceApi model based on the service ID
+    // Fetch API key only if the status is "accepted"
     let apiKey = null;
     if (status === "accepted") {
       console.log("Fetching API key for service:", updatedPurchase.serviceName);
-    
-      // Assuming you have the serviceId in the updatedPurchase object
-      const serviceId = updatedPurchase.serviceId; 
-    
-      // Query the database for the service using serviceId
-      const serviceApi = await ServiceAPI.findOne({ _id: serviceId });
-    
-      if (serviceApi) {
-        apiKey = serviceApi.apiKey; // Assign API key from the database
-        console.log("API Key retrieved:", apiKey);
-      } else {
-        console.log("API key not found for this service.");
-      }
+      apiKey = await getAPIKeyForPurchase(purchaseId); // Fetch API key for this purchase
+      console.log("API Key retrieved:", apiKey);
     }
-    
-    
-    
-    // Update the purchase status and save the API key (if retrieved)
+
+    // Update the purchase status
     updatedPurchase.status = status;
+    if (apiKey) {
+      updatedPurchase.apiKey = apiKey;  // Store the API key if fetched
+    }
+
     await updatedPurchase.save();
+
 
     // Email subject
     const emailSubject = `Your Purchase Has Been ${status.charAt(0).toUpperCase() + status.slice(1)}`;
