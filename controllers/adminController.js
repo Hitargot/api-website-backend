@@ -1,8 +1,6 @@
-// controllers/adminController.js
 const Purchase = require('../models/purchase');
-const ServiceAPI = require('../models/ServiceAPI');  // Correctly refer to the ServiceAPI model
+const ServiceAPI = require('../models/ServiceAPI');
 const { sendEmail } = require('../utils/sendEmail');
-
 
 exports.getAllPurchases = async (req, res) => {
   try {
@@ -29,11 +27,14 @@ exports.updatePurchaseStatus = async (req, res) => {
       if (!purchase) {
         throw new Error("Purchase not found.");
       }
-      const serviceAPI = await ServiceAPI.findOne({ service: purchase.serviceId });
+
+      // Ensure purchase has a valid serviceId reference
+      const serviceAPI = await ServiceAPI.findOne({ service: purchase.serviceId });  // Assuming serviceId is in Purchase
       if (!serviceAPI) {
         throw new Error("API key not found for the given service.");
       }
-      return serviceAPI.apiKey;  // Return the apiKey
+      
+      return serviceAPI.apiKey;  // Return the API key
     } catch (error) {
       console.error("Error fetching API key:", error);
       throw error;
@@ -50,8 +51,8 @@ exports.updatePurchaseStatus = async (req, res) => {
     // Fetch API key only if the status is "accepted"
     let apiKey = null;
     if (status === "accepted") {
-      console.log("Fetching API key for service:", updatedPurchase.serviceName);
-      apiKey = await getAPIKeyForPurchase(purchaseId); // Fetch API key for this purchase
+      console.log("Fetching API key for service:", updatedPurchase.serviceId);  // Use serviceId instead of serviceName
+      apiKey = await getAPIKeyForPurchase(purchaseId);  // Fetch API key for this purchase
       console.log("API Key retrieved:", apiKey);
     }
 
