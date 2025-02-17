@@ -25,25 +25,25 @@ exports.fetchAPIList = async (req, res) => {
 
 // Add or Update API for a Service
 exports.addOrUpdateAPI = async (req, res) => {
-  const { serviceId, apiKey } = req.body;
-
-  try {
-    let serviceAPI = await ServiceAPI.findOne({ service: serviceId });
-
-    if (serviceAPI) {
-      serviceAPI.apiKey = apiKey;
-      await serviceAPI.save();
-      return res.status(200).json({ message: "API updated successfully." });
-    } else {
-      serviceAPI = new ServiceAPI({ service: serviceId, apiKey });
-      await serviceAPI.save();
-      return res.status(201).json({ message: "API added successfully." });
+    const { serviceId, apiKey } = req.body;
+  
+    try {
+      let serviceAPI = await ServiceAPI.findOne({ service: serviceId });
+  
+      if (serviceAPI) {
+        serviceAPI.apiKey = apiKey;
+        await serviceAPI.save();
+        return res.status(200).json({ message: "API updated successfully." });
+      } else {
+        serviceAPI = new ServiceAPI({ service: serviceId, apiKey });
+        await serviceAPI.save();
+        return res.status(201).json({ message: "API added successfully." });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Error adding or updating API.", details: error.message });
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error adding or updating API.", details: error.message });
-  }
-};
+  };
 
 // Delete API for a Service
 exports.deleteAPI = async (req, res) => {
