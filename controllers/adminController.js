@@ -30,18 +30,20 @@ exports.updatePurchaseStatus = async (req, res) => {
     }
 
     // Retrieve the API key from the serviceApi model based on the service ID
-    let apiKey = updatedPurchase.apiKey;
-    if (status === "accepted" && !apiKey) {
-      // Assuming the purchase document has a `service` field that refers to the service's ObjectId
-      const serviceApi = await ServiceAPI.findOne({ service: updatedPurchase.service });
+    let apiKey = null; // Initialize apiKey as null
+    if (status === "accepted") {
+      console.log("Fetching API key for service:", updatedPurchase.serviceName);
+    
+      const serviceApi = await ServiceAPI.findOne({ service: updatedPurchase.serviceName });
+    
       if (serviceApi) {
-        apiKey = serviceApi.apiKey;  // Retrieve the API key from the ServiceAPI model
-        updatedPurchase.apiKey = apiKey;
+        apiKey = serviceApi.apiKey; // Assign API key from the database
+        console.log("API Key retrieved:", apiKey);
       } else {
-        return res.status(404).json({ error: "API key not found for this service." });
+        console.log("API key not found for this service.");
       }
     }
-
+    
     // Update the purchase status and save the API key (if retrieved)
     updatedPurchase.status = status;
     await updatedPurchase.save();
