@@ -113,19 +113,19 @@ exports.updatePurchaseStatus = async (req, res) => {
               </div>
               <div class="cta">
                 <p>Use this API key to access the purchased service.</p>
-                <a href="http://yourcompany.com/dashboard" target="_blank">View Your API Key</a>
+                <a href="https://api-selling-website.netlify.app/services" target="_blank">View Your API Key</a>
               </div>
             ` : `
               <div class="cta">
                 <p>Unfortunately, your purchase was not approved.</p>
-                <a href="http://yourcompany.com/support" target="_blank">Contact Support</a>
+                <a href="mailto:mailto:apismarketplace930@gmail.com" target="_blank">Contact Support</a>
               </div>
             `}
 
             <div class="footer">
               <p>If you have any questions, feel free to contact us.</p>
               <p>Best regards, <br>APIs Marketplace</p>
-              <p>Website: <a href="http://yourcompany.com">yourcompany.com</a></p>
+              <p>Website: <a href="https://api-selling-website.netlify.app">APIsMarketplace.com</a></p>
             </div>
           </div>
         </body>
