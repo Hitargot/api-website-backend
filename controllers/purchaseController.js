@@ -148,7 +148,7 @@ exports.createPurchase = [
             
                     <div class="cta">
                       <p>If you have any questions or need further assistance, feel free to contact us.</p>
-                      <a href="mailto:support@yourcompany.com">Contact Support</a>
+                      <a href="mailto:mailto:apismarketplace930@gmail.com">Contact Support</a>
                     </div>
             
                     <div class="footer">
