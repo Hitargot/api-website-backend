@@ -153,7 +153,7 @@ exports.createPurchase = [
             
                     <div class="footer">
                       <p>Best regards, <br>APIs Marketplace</p>
-                      <p>Website: <a href="https://api-selling-website.netlify.app">APIs Marketplace</a></p>
+                      <p>Website: <a href="https://apisellingwebsite.com">APIs Marketplace</a></p>
                     </div>
                   </div>
                 </body>
